@@ -60,7 +60,30 @@ int get(char *filename, int index) {
  *       do nothing in case of errors
  */
 void set(char *filename, int index, int value) {
-
+    int file, length;
+    int* srcMap;
+    if ((file = open(filename, O_RDONLY)) != -1){
+        struct stat myStruct;
+        if ((fstat(file, &myStruct)) != -1){
+            length = myStruct.st_size/sizeof(int);
+            if (length > index){
+                if ((srcMap = (int*) mmap(NULL, length*sizeof(int), PROT_READ, MAP_SHARED, file, 0)) != MAP_FAILED){
+                    srcMap[index] = value;
+                    if (munmap(srcMap, length*sizeof(int)) != -1){
+                        close(file);
+                    }else{
+                        close(file);
+                    }
+                }else{
+                    close(file);
+                }
+            }else{
+                close(file);
+            }
+        }else{
+            close(file);
+        }
+    }
 }
 
 int main(){
