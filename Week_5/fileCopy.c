@@ -15,9 +15,10 @@
  *       return 0 if the function terminates with success, -1 in case of errors.
  */
 int copy(char *file_name, char *new_file_name) {
-    int file1, file2 = 18;
+    int close1, close2, file1, file2 = 18;
     size_t length;
-    void* srcMap1, srcMap2;
+    void* srcMap1;
+    void* srcMap2;
     if ((file1 = open(file_name, O_RDONLY)) != -1 ){
         struct stat struct1;
         if ((fstat(file1, &struct1)) != -1){
@@ -29,50 +30,35 @@ int copy(char *file_name, char *new_file_name) {
                             if ((memcpy(srcMap2, srcMap1, length)) != NULL){
                                 if (munmap(srcMap2, length) != -1){
                                     if (munmap(srcMap1, length) != -1){
-                                        close(file2);
-                                        close(file1);
-                                        return 0;
-                                    }else{
-                                        close(file2);
-                                        close(file1);
-                                        return -1;
+                                       close2 = close(file2);
+                                       close1 = close(file1);
+                                       if (close1 == -1 || close2 == -1){
+                                           return -1;
+                                       }
+                                       return 0;
                                     }
-                                }else{
-                                    close(file2);
-                                    close(file1);
-                                    return -1;
                                 }
-                            }else{
-                                close(file2);
-                                close(file1);
-                                return -1;
                             }
-                        }else{
-                            close(file2);
-                            close(file1);
-                            return -1;
                         }
-                    }else{
-                        close(file2);
-                        close(file1);
-                        return -1;
                     }
                 }else{
-                    close(file2);
-                    close(file1);
+                    close2 = close(file2);
+                    close1 = close(file1);
+                    if (close1 == -1 || close2 == -1){
+                        return -1;
+                    }
                     return -1;
                 }
-            }else{
-                close(file1);
-                return -1;
             }
         }else{
-            close(file1);
+            close1 = close(file1);
+            if (close1 == -1){
+                return -1;
+            }
             return -1;
         }
-    }else{
-        return -1;
     }
+    return -1;
 }
 
 int main(){
