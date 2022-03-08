@@ -23,6 +23,10 @@ int copy(char *file_name, char *new_file_name) {
         struct stat struct1;
         if ((fstat(file1, &struct1)) != -1){
             length = struct1.st_size;
+            if(length == 0){
+                file2 = open(new_file_name, O_CREAT|O_RDWR|O_TRUNC);
+                return 0;
+            }
             if ((srcMap1 = mmap(NULL, length, PROT_READ, MAP_SHARED, file1, 0)) != MAP_FAILED){
                 if ((file2 = open(new_file_name, O_CREAT|O_RDWR|O_TRUNC)) != -1 ){
                     if ((ftruncate(file2, length)) != -1){
