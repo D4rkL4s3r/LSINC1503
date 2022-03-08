@@ -24,3 +24,7 @@ int protect(void inc(void), int nb, pthread_mutex_t* mutex){
     }
         return 0;
 }
+
+int main(){
+    return EXIT_SUCCESS;
+}
